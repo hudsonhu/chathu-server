@@ -77,19 +77,4 @@ public class ClientData {
         this.name = name;
     }
 
-    public double getCostToServer() {
-        return costToServer;
-    }
-
-    public void setCostToServer(double costToServer) {
-        this.costToServer = costToServer;
-    }
-
-    public int getRouterId() {
-        return routerId;
-    }
-
-    public void setRouterId(int routerId) {
-        this.routerId = routerId;
-    }
 }
