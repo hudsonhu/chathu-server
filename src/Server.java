@@ -7,6 +7,7 @@ import javax.net.ssl.*;
 import java.security.SecureRandom;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.Properties;
 
 public class Server {
     private ServerSocket serverSocket;
@@ -14,15 +15,26 @@ public class Server {
     private Map<String, ClientData> clients;
     public void start(int port) {
         try {
-            // load keystore from local
-            // TODO: key file should be determined by the user, not hardcoded
-            KeyStore keyStore = KeyStore.getInstance("JKS");
-            try (InputStream ksStream = new FileInputStream("server-keystore.jks")) {
-                keyStore.load(ksStream, "123456".toCharArray());
+            Properties props = new Properties();
+            try (FileInputStream fis = new FileInputStream("./server-config.properties")) {
+                props.load(fis);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to load configuration file", e);
             }
 
+            String keystorePath = props.getProperty("keystore.path");
+            String keystorePassword = props.getProperty("keystore.password");
+
+            if (keystorePath == null || keystorePassword == null) {
+                throw new RuntimeException("Missing keystore.path or keystore.password in configuration file");
+            }
+
+            KeyStore keyStore = KeyStore.getInstance("JKS");
+            try (InputStream ksStream = new FileInputStream(keystorePath)) {
+                keyStore.load(ksStream, keystorePassword.toCharArray());
+            }
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            kmf.init(keyStore, "123456".toCharArray());  // 私钥密码 (与 -storepass 相同)
+            kmf.init(keyStore, keystorePassword.toCharArray());
 
             // TRUST ALL CLIENTS
             TrustManager[] trustAllCerts = new TrustManager[]{
