@@ -141,7 +141,7 @@ public class ClientHandler extends Thread implements Runnable{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-//        server.getOspf().removeClient(clientData);
+
         clients.remove(clientData.getName());
         System.out.println(clientData.getName() + " disconnected, " + clients.size() + " clients remaining");
     }
