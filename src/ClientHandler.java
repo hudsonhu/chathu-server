@@ -41,6 +41,8 @@ public class ClientHandler extends Thread implements Runnable{
                 read = in.read(buffer);
                 if (read == -1) {
                     System.out.println("Client disconnected");
+                    // broadcast to other clients
+                    server.broadcast("LEFT_" + clientData.getName());
                     disconnect();
                     break;
                 }
@@ -51,6 +53,7 @@ public class ClientHandler extends Thread implements Runnable{
             }
         } catch (Exception e) {
             disconnect();
+            server.broadcast("LEFT_" + clientData.getName());
             System.out.println("A client disconnected");
         }
     }
@@ -76,7 +79,7 @@ public class ClientHandler extends Thread implements Runnable{
             if (client != null) {
                 client.getOut().write(("KICKED by " + clientData.getName()).getBytes());
                 client.getSocket().close();
-                server.broadcast("Client " + name + " has been kicked by " + clientData.getName());
+                server.broadcast("LEFT_" + name);
                 clients.remove(name);
             } else {
                 out.write("[KICK] Client not found".getBytes());
@@ -122,9 +125,10 @@ public class ClientHandler extends Thread implements Runnable{
             clients.remove(oldName);
             clients.put(name, clientData);
             clientData.setPort(port);
-            server.broadcast("Client " + name + " has connected");
+            String ipPort = clientData.getIp() + ":" + clientData.getPort();
+            server.broadcast("JOIN_" + name + "_" + ipPort);
         } else if (message.startsWith("STOP")) {
-            server.broadcast(" " + clientData.getName() + " has disconnected");
+            server.broadcast("LEFT_" + clientData.getName());
             disconnect();
         } else {
             String response = "Unknown command";
