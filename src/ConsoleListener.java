@@ -16,8 +16,7 @@ public class ConsoleListener implements Runnable {
 
     private static final String HELP_MESSAGE = "HELP - show this message\n" +
             "LIST - list all connected clients\n" +
-            "BROADCAST - broadcast a message to all clients\n" +
-            "MULTICAST - multicast a message to a group of clients\n";
+            "BROADCAST - broadcast a message to all clients\n";
 
 
     @Override
